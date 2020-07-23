@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -17,6 +19,7 @@ namespace GoogleSpreadsheetDemo
     public partial class MainPage : ContentPage
     {
         string[][] setArray;
+        string jsonString;
        
         public MainPage()
         {
@@ -102,6 +105,26 @@ namespace GoogleSpreadsheetDemo
                 arrayIteration = value;
                 OnPropertyChanged(nameof(ArrayIteration));
             }
+        }
+
+        private void SpreadsheetGetButton_Pressed(object sender, EventArgs e)
+        {
+            ProcessSpreadsheetUrl();
+        }
+
+        private void ProcessSpreadsheetUrl()
+        {
+            string spreadUrl = SpreadsheetURL.Text;
+            Regex regex = new Regex(@"(?<=d/)(.*)(?=/)");
+            MatchCollection matches = regex.Matches(spreadUrl);
+            string spreadsheetCode = matches[0].Value;
+            int sheetPageNumber = 1;
+            string jsonUrl = "https://spreadsheets.google.com/feeds/cells/" + spreadsheetCode + "/" + sheetPageNumber + "/public/full?alt=json";
+            using (WebClient wc = new WebClient())
+            {
+                jsonString = wc.DownloadString(jsonUrl);
+            }
+            var json = 
         }
     }
 }
