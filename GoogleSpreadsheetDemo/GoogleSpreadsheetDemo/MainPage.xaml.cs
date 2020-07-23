@@ -124,7 +124,7 @@ namespace GoogleSpreadsheetDemo
             {
                 jsonString = wc.DownloadString(jsonUrl);
             }
-            var json = 
+            
         }
     }
 }
