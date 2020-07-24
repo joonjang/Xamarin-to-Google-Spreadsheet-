@@ -2,31 +2,24 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              mc:Ignorable="d"
              x:Class="GoogleSpreadsheetDemo.MainPage">
+
+
     <ScrollView>
         <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Padding="40" WidthRequest="400">
         
             <Label Text="WORKOUT" FontAttributes="Bold" FontSize="Title"/>
             <Label Text="{Binding ArrayIteration}" FontAttributes="Bold" FontSize="Title"/>
 
-            <Entry x:Name="SpreadsheetURL" Placeholder="Spreadsheet URL" ReturnType="Send" 
-                   Text="https://docs.google.com/spreadsheets/d/1XWQNN76FJgt3X_213zwqblrOu2eSI0Tss1Zt1jPNLi0/edit#gid=524439697"/>
-            <Button x:Name="SpreadsheetGetButton" Text="Spreadsheet GET" BackgroundColor="White" Pressed="SpreadsheetGetButton_Pressed" />
+            <Entry Placeholder="Enter Spreadsheet URL" ReturnType="Send" 
+                Text="{Binding SpreadsheetUrl}"/>
+            <Button Text="Spreadsheet GET" BackgroundColor="White" Command="{Binding GetJsonCommand}" />
 
-            <Entry x:Name="WeekEntry" Placeholder="Week0" ReturnType="Next" Text="Week0"/>
-            <Entry x:Name="DayEntry" Placeholder="DAY 1" ReturnType="Next" Text="DAY 1"/>
 
-            <Entry x:Name="SetOneEntry" Placeholder="Set 1" ReturnType="Next" Keyboard="Numeric" Text="69"/>
-            <Entry x:Name="SetTwoEntry" Placeholder="Set 2" ReturnType="Next" Keyboard="Numeric" Text="69"/>
-            <Entry x:Name="SetThreeEntry" Placeholder="Set 3" ReturnType="Next" Keyboard="Numeric" Text="420"/>
-            <Entry x:Name="SetFourEntry" Placeholder="Set 4" ReturnType="Next" Keyboard="Numeric" Text="420"/>
-            <Entry x:Name="SetFiveEntry" Placeholder="Set 5" ReturnType="Next" Keyboard="Numeric" Text="42069"/>
-            <Entry x:Name="SetSixEntry" Placeholder="Set 6" ReturnType="Send" Keyboard="Numeric" Text="6969"/>
-            <Button x:Name="ArrayButton" Text="Next" BackgroundColor="White" Pressed="ArrayButton_Pressed" />
-            <Button x:Name="SubmitButton" Text="Submit" BackgroundColor="White" Pressed="SubmitButton_Pressed" />
-            <Label x:Name="ResultLabel" IsVisible="false"/>
+            <Button Text="Submit" BackgroundColor="White" Command="{Binding SubmitJsonCommand}"/>
+            <Label IsVisible="{Binding ResultResponseBool}" Text="{Binding ResultResponseText}"/>
         
         </StackLayout>
     </ScrollView>
