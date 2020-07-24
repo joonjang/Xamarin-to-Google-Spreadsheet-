@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,6 +10,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using static GoogleSpreadsheetDemo.SpreadsheetModel;
+using Entry = GoogleSpreadsheetDemo.SpreadsheetModel.Entry;
 
 namespace GoogleSpreadsheetDemo
 {
@@ -124,7 +127,15 @@ namespace GoogleSpreadsheetDemo
             {
                 jsonString = wc.DownloadString(jsonUrl);
             }
-            
+            Root jsonObject = JsonConvert.DeserializeObject<Root>(jsonString);
+
+            List<string> cellInfoList = new List<string>();
+            foreach(var cell in jsonObject.Feed.Entry)
+            {
+                cellInfoList.Add(cell.Content.T);
+                
+            }
+
         }
     }
 }
