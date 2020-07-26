@@ -3,9 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:vm="clr-namespace:GoogleSpreadsheetDemo.ViewModel"
              mc:Ignorable="d"
              x:Class="GoogleSpreadsheetDemo.MainPage">
 
+    <ContentPage.BindingContext>
+        <vm:SheetViewModel />
+    </ContentPage.BindingContext>
 
     <ScrollView>
         <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Padding="40" WidthRequest="400">

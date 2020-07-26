@@ -25,7 +25,6 @@ namespace GoogleSpreadsheetDemo
        
         public MainPage()
         {
-            BindingContext = new SheetViewModel();
             InitializeComponent();
             
         }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using GoogleSpreadsheetDemo.Model;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,20 +8,28 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Input;
 using Xamarin.Forms;
 using static GoogleSpreadsheetDemo.SpreadsheetModel;
 
 namespace GoogleSpreadsheetDemo.ViewModel
 {
+    //https://github.com/saamerm/Xamarin-GoogleSheetsDB
+    // Learn more about making custom code visible in the Xamarin.Forms previewer
+    // by visiting https://aka.ms/xamarinforms-previewer
+
+
     class SheetViewModel : INotifyPropertyChanged
     {
         string[][] setArray;
         string jsonString;
+        WatchModel watchModel;
 
-        public Command SubmitJsonCommand { get; }
-        public Command GetJsonCommand { get; }
+        public ICommand SubmitJsonCommand { get; }
+        public ICommand GetJsonCommand { get; }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
 
         public SheetViewModel()
         {
@@ -50,8 +59,8 @@ namespace GoogleSpreadsheetDemo.ViewModel
             var jsonString = JsonConvert.SerializeObject(model);
 
 
-            //
-            string tmp = "{\"DataArray\":[[\"Week0\",\"DAY 1\"],[\"69\",\"69\",\"420\",\"420\",\"42069\",\"6969\"],[\"69\",\"69\",\"420\",\"420\",\"42069\",\"6969\"],[\"69\",\"69\",\"420\",\"420\",\"42069\",\"6969\"],[\"69\",\"69\",\"420\",\"420\",\"42069\",\"6969\"]]}";
+            // from jsonString
+            string tmp = "{\"DataArray\":[[\"Week 0\",\"DAY 1\"],[\"69\",\"69\",\"420\",\"420\",\"42069\",\"6969\"],[\"69\",\"69\",\"420\",\"420\",\"42069\",\"6969\"],[\"69\",\"69\",\"420\",\"420\",\"42069\",\"6969\"],[\"69\",\"69\",\"420\",\"420\",\"42069\",\"6969\"]]}";
             var requestContent = new StringContent(tmp);
             //
 
@@ -159,11 +168,11 @@ namespace GoogleSpreadsheetDemo.ViewModel
         {
             // todo: for debugging, make text user input and saved by preference
             SpreadsheetUrl = "https://docs.google.com/spreadsheets/d/1XWQNN76FJgt3X_213zwqblrOu2eSI0Tss1Zt1jPNLi0/edit#gid=524439697";
+            int sheetPageNumber = 1;
 
             Regex regex = new Regex(@"(?<=d/)(.*)(?=/)");
             MatchCollection matches = regex.Matches(SpreadsheetUrl);
             string spreadsheetCode = matches[0].Value;
-            int sheetPageNumber = 1;
             string jsonUrl = "https://spreadsheets.google.com/feeds/cells/" + spreadsheetCode + "/" + sheetPageNumber + "/public/full?alt=json";
             using (WebClient wc = new WebClient())
             {
@@ -177,6 +186,91 @@ namespace GoogleSpreadsheetDemo.ViewModel
                 cellInfoList.Add(cell.Content.T);
 
             }
+
+            FilterThroughJsonList(cellInfoList);
+            PackageForWatch();
+        }
+
+        void PackageForWatch()
+        {
+            if (watchModel == null)
+            {
+                return;
+            };
+
+            var jsonString = JsonConvert.SerializeObject(watchModel);
+
+
+        }
+
+        private string userChosenDay;
+        public string UserChosenDay
+        {
+            get => userChosenDay;
+            set
+            {
+                userChosenDay = value;
+                OnPropertyChanged();
+            }
+        }
+
+        void FilterThroughJsonList(List<string> jsonList)
+        {
+            // todo: for debugging hardcoded the day selections
+            UserChosenDay = "DAY 2";
+
+            watchModel = new WatchModel();
+            watchModel.Sets = new List<string>();
+            watchModel.Workouts = new List<string>();
+
+            //the first array will always be the week information
+            watchModel.Week = jsonList[0];
+            // we already know which day is chosen based off user input
+            watchModel.Day = UserChosenDay;
+
+            int i = 0;
+
+            // master loop bool, determines if loop is iterated
+            bool workoutLoop = true;
+
+            // triggers to recording list string into the WatchModel object
+            bool workoutDayFound = false;
+            bool registerToObject = false;
+
+            while (workoutLoop)
+            {
+                i++;
+                if(jsonList[i] == UserChosenDay)
+                {
+                    workoutDayFound = true;
+                }
+                if(jsonList[i].Contains("Set") && workoutDayFound)
+                {
+                    registerToObject = true;
+                    watchModel.Sets.Add(jsonList[i]);
+                }
+
+                if (registerToObject && !jsonList[i].Contains("Set"))
+                {
+                    // if the next array is DAY then a new workout is found,
+                    //  then object is populated and its time to end the loop
+                    if (jsonList[i].Contains("DAY"))
+                    {
+                        workoutDayFound = false;
+                        registerToObject = false;
+                        workoutLoop = false;
+                        break;
+                    }
+
+                    watchModel.Workouts.Add(jsonList[i]);
+
+                    
+                }
+
+
+            }
+
+
 
         }
         
